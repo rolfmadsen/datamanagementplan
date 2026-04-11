@@ -1,0 +1,146 @@
+{
+  "adequateCountries": {
+    "description": "Lande med EU-Kommissionens tilstrækkelighedsafgørelse (pr. april 2026) + EU/EØS. Kilde: Datatilsynet.",
+    "euEea": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO"],
+    "adequate": ["AD","AR","BR","CA","FO","GG","IM","IL","JP","JE","NZ","CH","GB","KR","UY","US"]
+  },
+  "rules": [
+    {
+      "id": "gdpr-art6",
+      "name": "GDPR Artikel 6 — Personoplysninger",
+      "description": "Datasættet indeholder personoplysninger. Kræver lovligt behandlingsgrundlag.",
+      "trigger": {
+        "field": "dataset.personal_data",
+        "operator": "equals",
+        "value": "yes"
+      },
+      "regulation": "GDPR Artikel 6",
+      "consequence": {
+        "min_profile": 1,
+        "requirements": ["Kryptering af data i hvile og transit", "Logning af adgang", "Dokumenteret behandlingsgrundlag"]
+      }
+    },
+    {
+      "id": "gdpr-art9",
+      "name": "GDPR Artikel 9 — Følsomme personoplysninger",
+      "description": "Datasættet indeholder følsomme data (helbredsoplysninger, biometri, DNA osv.). Kræver isolation og højeste sikkerhedsniveau.",
+      "trigger": {
+        "field": "dataset.sensitive_data",
+        "operator": "equals",
+        "value": "yes"
+      },
+      "regulation": "GDPR Artikel 9 / Databeskyttelsesloven § 10",
+      "consequence": {
+        "min_profile": 3,
+        "requirements": ["Isolation (Safe Haven)", "Fuld audit-logning", "Adgangskontrol med MFA", "Kryptering AES-256"]
+      }
+    },
+    {
+      "id": "dbl-10-keywords",
+      "name": "DBL § 10 — Nøgleords-detektion",
+      "description": "Security & privacy-beskrivelser indeholder nøgleord der indikerer Art. 9-data.",
+      "trigger": {
+        "field": "dataset.security_and_privacy",
+        "operator": "contains_any",
+        "value": ["art 9", "artikel 9", "helbredsdata", "biometri", "dna", "cpr", "personnummer", "sundhedsdata", "genetisk"]
+      },
+      "regulation": "Databeskyttelsesloven § 10",
+      "consequence": {
+        "min_profile": 2,
+        "requirements": ["Skærpet adgangskontrol", "NDA for alle med adgang"]
+      }
+    },
+    {
+      "id": "uris-third-country",
+      "name": "URIS — Tredjelandsoverførsel",
+      "description": "Data hostes i eller bidragydere er tilknyttet lande uden tilstrækkelighedsafgørelse.",
+      "trigger": {
+        "field": "geo_or_affiliation",
+        "operator": "not_in_adequate_countries"
+      },
+      "regulation": "URIS-retningslinjer / GDPR Kapitel V",
+      "consequence": {
+        "min_profile": 1,
+        "requirements": ["Skærpet log-monitorering", "Transfer Impact Assessment (TIA)", "Standardkontraktbestemmelser (SCC)"]
+      }
+    },
+    {
+      "id": "gdpr-art17-retention",
+      "name": "GDPR Art. 17 — Ret til sletning / Arkivering",
+      "description": "Projektets slutdato er passeret. Data bør flyttes til arkivering med WORM-beskyttelse.",
+      "trigger": {
+        "field": "project.end",
+        "operator": "date_passed"
+      },
+      "regulation": "GDPR Artikel 17 / Dansk kodeks for integritet i forskning",
+      "consequence": {
+        "recommended_tier": "cold",
+        "requirements": ["WORM-arkivering", "Integritetstjek (checksums)", "Bevaringsplan dokumenteret"]
+      }
+    },
+    {
+      "id": "ethical-issues",
+      "name": "Etiske problemstillinger",
+      "description": "DMP'en angiver eksisterende etiske problemstillinger. Kræver dokumentation og minimum Gul profil.",
+      "trigger": {
+        "field": "dmp.ethical_issues_exist",
+        "operator": "equals",
+        "value": "yes"
+      },
+      "regulation": "Dansk kodeks for integritet i forskning (2026)",
+      "consequence": {
+        "min_profile": 1,
+        "requirements": ["Dokumenteret etisk vurdering", "Godkendelse fra etisk komité"]
+      }
+    },
+    {
+      "id": "nis2-closed-sensitive",
+      "name": "NIS2 — Lukket adgang til følsomt data",
+      "description": "Datasæt med persondata eller følsom data der har lukket adgang kræver skærpet NIS2-overholdelse.",
+      "trigger": {
+        "field": "composite",
+        "operator": "closed_and_sensitive"
+      },
+      "regulation": "NIS2-loven § 6 / Statens Tekniske Minimumskrav",
+      "consequence": {
+        "min_profile": 2,
+        "requirements": ["Always-On VPN (Krav 2)", "Lokal MFA (Krav 11)", "12 måneders log-retention (Krav 22)"]
+      }
+    }
+  ],
+  "platforms": [
+    {
+      "id": "sif",
+      "name": "SIF (KU)",
+      "description": "Safe Haven med fuld audit-logning. Til Orange/Rød profil.",
+      "supported_profiles": [2, 3],
+      "url": "https://kunet.ku.dk/work-areas/research/data/sif"
+    },
+    {
+      "id": "ucloud",
+      "name": "UCloud (DeiC)",
+      "description": "ISO 27001-certificeret HPC. Gul/Orange/Rød profil.",
+      "supported_profiles": [1, 2, 3],
+      "url": "https://cloud.sdu.dk"
+    },
+    {
+      "id": "erda",
+      "name": "ERDA (KU)",
+      "description": "Generel videnskabelig data. Grøn/Gul profil.",
+      "supported_profiles": [0, 1],
+      "url": "https://erda.ku.dk"
+    }
+  ],
+  "profileLabels": {
+    "0": { "name": "Grøn", "level": "Niveau 0", "description": "Offentlig — Ingen risiko ved offentliggørelse", "color": "green" },
+    "1": { "name": "Gul", "level": "Niveau 1", "description": "Intern — Forbeholdt medarbejdere; lav negativ effekt", "color": "yellow" },
+    "2": { "name": "Orange", "level": "Niveau 2", "description": "Fortrolig — Risiko for betydelig skade", "color": "orange" },
+    "3": { "name": "Rød", "level": "Niveau 3", "description": "Følsom — Højeste sikkerhedskrav; katastrofal effekt", "color": "red" }
+  },
+  "tierLabels": {
+    "critical": { "name": "Critical", "description": "High Performance — Aktiv HPC-analyse" },
+    "hot": { "name": "Hot", "description": "Active Research — Daglig adgang til aktive filer" },
+    "warm": { "name": "Warm", "description": "Collaboration — Hyppig deling, versionsstyring" },
+    "cold": { "name": "Cold", "description": "Archive — Langtidsbevaring (5-10 år), WORM" }
+  }
+}
