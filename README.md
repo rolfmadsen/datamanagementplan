@@ -29,44 +29,86 @@ Eller brug VS Code Live Server og åbn `src/index.html`.
 
 ## 📋 Funktioner
 
-### To skiftbare views
+- **Dual-view interface**: Skift lynhurtigt mellem maDMP-editoren og compliance-dashboardet.
+- **Policy-as-Code**: Automatiseret validering mod danske og europæiske regulatoriske krav.
+- **Visual Compliance Engine**: Real-time feedback på sikkerhedsprofil og anbefalede storage-platforme.
+- **Import/Eksport**: Fuld understøttelse af RDA maDMP Common Standard v1.2.
+- **Rapport-generering**: Eksporter din compliance-analyse direkte til Word (.doc) til brug i projektansøgninger.
 
-| View | Formål |
-|------|--------|
-| **✏️ Editor** | Udfyld en maDMP-skabelon med strukturerede felter. Eksportér som JSON. |
-| **📊 Dashboard** | Se compliance-analyse med sikkerhedsprofil, storage tier og regulatorisk mapping. |
+---
 
-### Crosswalk-motor (Policy-as-Code)
+## 🧠 Arkitektur og Logik
 
-Værktøjet implementerer en automatiseret "Crosswalk"-logik der mapper datasæt-metadata til juridiske og tekniske krav:
+Dette afsnit beskriver den bagvedliggende "Policy-as-Code" (Crosswalk) motor, der automatisk mapper forskningsdatasæt til sikkerhedsprofiler og storage tiers ud fra RDA maDMP Common Standard v1.2.
 
-| Trigger | Hjemmel | Konsekvens |
-|---------|---------|------------|
-| `personal_data = yes` | GDPR Artikel 6 | Profil ≥ Gul, kryptering |
-| `sensitive_data = yes` | GDPR Artikel 9 / DBL § 10 | Profil = Rød, Safe Haven |
-| Nøgleord i security & privacy | DBL § 10 | Profil ≥ Orange |
-| Host geo-lokation ∉ Datatilsynets liste | URIS / GDPR Kap. V | TIA + SCC-krav |
-| Projekt slutdato overskredet | GDPR Art. 17 | Cold Tier (WORM) |
-| Etiske issues eksisterer | Dansk kodeks 2026 | Profil ≥ Gul |
-| Lukket adgang + persondata/følsomt | NIS2 § 6 | VPN + MFA + logkrav |
+### 1. Systemarkitektur & Dataflow
 
-### Sikkerhedsprofiler (dansk 4-trins model)
+Applikationen er bygget som en ren client-side (frontend) løsning, hvor al data og regelbehandling sker lokalt i brugerens browser for maksimal datasikkerhed.
 
-| Niveau | Farve | Beskrivelse |
-|--------|-------|-------------|
-| 0 | 🟢 Grøn | Offentlig — Ingen risiko ved offentliggørelse |
-| 1 | 🟡 Gul | Intern — Forbeholdt medarbejdere; lav negativ effekt |
-| 2 | 🟠 Orange | Fortrolig — Risiko for betydelig skade |
-| 3 | 🔴 Rød | Følsom — Højeste sikkerhedskrav; katastrofal effekt |
+```mermaid
+graph TD
+    user((Forsker))
+    editor[Editor UI]
+    dashboard[Dashboard UI]
+    engine[Crosswalk Engine]
+    rules[(Regelsæt: crosswalk-rules.json)]
+    json{maDMP JSON}
 
-### Storage Tiers
+    user -->|Indtaster metadata| editor
+    user <-->|Importerer/Eksporterer| json
+    json -->|Indlæser data| editor
+    editor -->|Sender DTO| engine
+    rules -->|Indlæser politikker| engine
+    engine -->|Returnerer analyse| dashboard
+    dashboard -->|Viser Profil & Tier| user
+```
 
-| Tier | Beskrivelse |
-|------|-------------|
-| Critical | High Performance — Aktiv HPC-analyse |
-| Hot | Active Research — Daglig adgang til aktive filer |
-| Warm | Collaboration — Hyppig deling, versionsstyring |
-| Cold | Archive — Langtidsbevaring (5-10 år), WORM |
+### 2. Sikkerhedsprofiler (Compliance Logik)
+
+Motoren tildeler hvert datasæt en sikkerhedsprofil fra 0 (Grøn) til 3 (Rød). Den endelige sikkerhedsprofil for hele projektet (DMP-niveau) bestemmes ud fra det strengeste (højeste) niveau blandt alle datasæt:
+`overallProfile = Math.max(0, ...datasetResults.profile)`
+
+| Betingelse (Trigger i maDMP JSON) | Hjemmel | Konsekvens | Påkrævede foranstaltninger (Uddrag) |
+|:---|:---|:---:|:---|
+| `personal_data == "yes"` | GDPR Artikel 6 | 🟡 Gul (1) | Kryptering, logning, dokumentation af behandlingsgrundlag. |
+| `ethical_issues_exist == "yes"` | Dansk kodeks (2026) | 🟡 Gul (1) | Dok. etisk vurdering, komité-godkendelse. |
+| Sikkerhedsnøgleord (f.eks. biometri, dna) | DBL § 10 | 🟠 Orange (2) | Skærpet adgangskontrol, NDA for brugere. |
+| `closed access` + Persondata/Følsomt | NIS2 § 6 | 🟠 Orange (2) | Always-On VPN, Lokal MFA, 12 mdr. log-retention. |
+| `sensitive_data == "yes"` | GDPR Art. 9 / DBL § 10 | 🔴 Rød (3) | Isolation (Safe Haven), fuld audit-logning. |
+
+### 3. Logik for Storage Tiers (Livscyklus)
+
+Valget af Storage Tier afhænger af projektets fase, typen af hardware og behovet for samarbejde.
+
+```mermaid
+flowchart TD
+    Start([Start]) --> Dates{Er alle slutdatoer\npasseret?}
+    Dates -- Ja --> Cold[<b>COLD (Arkiv)</b>\nGDPR Art. 17 / WORM krav]
+    Dates -- Nej --> HPC{Er der behov for\nHPC/GPU-ressourcer?}
+    HPC -- Ja --> Critical[<b>CRITICAL</b>\nHigh Performance Computing]
+    HPC -- Nej --> Version{Understøtter host\nversionsstyring?}
+    Version -- Ja --> Warm[<b>WARM</b>\nCollaboration / Deling]
+    Version -- Nej --> Hot[<b>HOT</b>\nStandard Active Research]
+```
+
+### 4. Tredjelandsoverførsler (URIS / GDPR Kap. V)
+
+Motoren skanner metadata for at identificere risikoen for tredjelandsoverførsler. Dette genererer advarsler, hvis landekoder i `distribution.host.geo_location` eller `contributor.affiliation` ikke findes i Datatilsynets liste over sikre lande (adequacy decision). Dette udløser krav om:
+- **Transfer Impact Assessment (TIA)**
+- **Standardkontraktbestemmelser (SCC)**
+
+### 5. Anbefaling af Platforme
+
+Motoren kobler den fundne Profil og Tier for at anbefale en specifik it-platformstype:
+
+- **Aktiv fase (Critical, Hot, Warm):**
+    - Profil 0-1 → *Standard Forskningsstorage (Aktiv)*
+    - Profil 2-3 → *Højsikkerheds Analyseplatform (Aktiv)*
+- **Passiv fase (Cold):**
+    - Profil 0-1 → *Standard Langtidsarkiv (Passiv)*
+    - Profil 2-3 → *Sikkert WORM-Arkiv (Passiv)*
+
+---
 
 ### Import / Eksport
 
