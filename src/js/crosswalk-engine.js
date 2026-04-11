@@ -10,6 +10,7 @@ export class CrosswalkEngine {
     this.platforms = rules.platforms;
     this.profileLabels = rules.profileLabels;
     this.tierLabels = rules.tierLabels;
+    this.requirementDetails = rules.requirementDetails || {};
   }
 
   /**
@@ -64,8 +65,8 @@ export class CrosswalkEngine {
     // Tredjelandsadvarsler
     const thirdCountryWarnings = this._checkThirdCountry(dmpData, datasets);
 
-    // Platformanbefalinger
-    const platformRecommendations = this._recommendPlatforms(overallProfile);
+    // Platformanbefalinger baseret på profil OG tier
+    const platformRecommendations = this._recommendPlatforms(overallProfile, overallTier);
 
     // Saml alle krav
     const allRequirements = new Set();
@@ -82,11 +83,13 @@ export class CrosswalkEngine {
         tier: overallTier,
         tierLabel: this.tierLabels[overallTier]
       },
+      dmp: dmpData,
       datasets: datasetResults,
       triggeredRules: allTriggered,
       thirdCountryWarnings,
       platformRecommendations,
       requirements: [...allRequirements],
+      requirementDetails: this.requirementDetails,
       hasData: true
     };
   }
@@ -332,14 +335,22 @@ export class CrosswalkEngine {
   }
 
   /**
-   * Anbefal platforme baseret på sikkerhedsprofil
+   * Anbefal platforme baseret på sikkerhedsprofil og storage tier
    */
-  _recommendPlatforms(profile) {
-    return this.platforms.map(platform => ({
-      ...platform,
-      recommended: platform.supported_profiles.includes(profile),
-      suitable: platform.supported_profiles.includes(profile)
-    }));
+  _recommendPlatforms(profile, tier) {
+    const isArchivePhase = (tier === 'cold');
+    const preferredType = isArchivePhase ? 'archive' : 'active';
+
+    return this.platforms.map(platform => {
+      const matchesProfile = platform.supported_profiles.includes(profile);
+      const matchesTier = platform.type === preferredType;
+      
+      return {
+        ...platform,
+        recommended: matchesProfile && matchesTier,
+        suitable: matchesProfile // Stadig "egnet" sikkerhedsmæssigt, selvom fasen er forkert
+      };
+    });
   }
 
   /**

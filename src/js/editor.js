@@ -113,35 +113,27 @@ export class Editor {
 
   _createToolbar() {
     const div = document.createElement('div');
-    div.className = 'toolbar';
+    div.className = 'editor-header';
     div.innerHTML = `
-      <div class="toolbar__group">
-        <h2 style="font-size: var(--font-size-xl); font-weight: 600;">maDMP Editor</h2>
+      <div class="editor-header__main">
+        <h2 class="editor-header__title">maDMP Editor</h2>
+        <button id="btn-clear-editor" class="btn btn--ghost btn--xs" title="Ryd alle felter og start forfra">
+          🗑️ Ryd formular
+        </button>
       </div>
-      <div class="toolbar__group">
-        <button id="btn-clear-editor" class="btn btn--secondary btn--sm">🗑️ Ryd</button>
+      <div class="editor-info">
+        <strong>📋 Sådan bruger du editoren</strong>
+        <p>Udfyld felterne nedenfor for at beskrive din Data Management Plan (DMP). Felter markeret med <span class="text-red">*</span> er påkrævede. Felter markeret med 🛡️ er <strong>compliance-relevante</strong> og påvirker den automatiske analyse i Dashboardet.</p>
       </div>
     `;
     div.querySelector('#btn-clear-editor').addEventListener('click', () => {
-      if (confirm('Er du sikker på at du vil rydde alle felter?')) {
+      if (confirm('Er du sikker på at du vil rydde alle felter? Alle dine indtastninger vil gå tabt.')) {
         this.data = this._defaultDMP();
         this.activeDatasetIndex = 0;
         this.render();
         this._notifyChange();
       }
     });
-
-    // Info-banner
-    const info = document.createElement('div');
-    info.style.cssText = 'background: #EBF0F5; border-left: 4px solid var(--ku-red); padding: 12px 16px; border-radius: 0 6px 6px 0; margin-bottom: var(--space-lg); font-size: var(--font-size-sm); color: var(--text-secondary); line-height: 1.6;';
-    info.innerHTML = `
-      <strong style="color: var(--text-primary);">📋 Sådan bruger du editoren</strong><br>
-      Udfyld felterne nedenfor for at beskrive din Data Management Plan (DMP). Felter markeret med 
-      <span style="color: var(--ku-red);">*</span> er påkrævede. Felter markeret med 🛡️ er 
-      <strong>compliance-relevante</strong> og påvirker den anbefalede sikkerhedsprofil og storage tier.
-      <br>Skift til <strong>📊 Dashboard</strong> for at se den automatiske compliance-analyse.
-    `;
-    div.appendChild(info);
 
     return div;
   }

@@ -823,6 +823,94 @@ body {
   color: var(--text-muted);
 }
 
+/* --- Requirements Accordion --- */
+.requirements-list {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.requirement-item {
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform var(--transition-fast);
+}
+
+.requirement-item__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  list-style: none; /* Skjuler browserens standardpil */
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+
+/* Safari specifik løsning til at skjule standardpil */
+.requirement-item__summary::-webkit-details-marker {
+  display: none; 
+}
+
+.requirement-item__summary:hover {
+  background: #f0f4f8;
+}
+
+.requirement-item__icon {
+  color: var(--ku-red);
+  transition: transform 0.2s ease;
+  display: inline-block;
+  font-size: 1.1em;
+}
+
+/* Drej pilen 90 grader ned, når punktet er foldet ud */
+details[open] .requirement-item__icon {
+  transform: rotate(90deg);
+}
+
+.requirement-item__content {
+  padding: 0 16px 16px 40px;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* --- Smart Alert (Funktion 2) --- */
+.archive-alert {
+  display: flex;
+  gap: var(--space-md);
+  background: #FFF9E6;
+  border-left: 5px solid #FFCC00;
+  padding: var(--space-lg);
+  margin: var(--space-lg) 0;
+  border-radius: 0 8px 8px 0;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.archive-alert__icon {
+  font-size: 1.5rem;
+}
+
+.archive-alert__content > strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #856404;
+}
+
+.archive-alert__content p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: #856404;
+  line-height: 1.5;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .empty-state__icon {
   font-size: 3rem;
   margin-bottom: var(--space-md);
@@ -887,28 +975,111 @@ body {
   }
 }
 
-/* --- Pulsing animation for compliance badge --- */
-@keyframes profilePulse {
-  0%, 100% { box-shadow: 0 0 0 0 transparent; }
-  50% { box-shadow: 0 0 20px 4px currentColor; }
-}
-
-.profile-badge--animate {
-  animation: profilePulse 2s ease-in-out 1;
-}
-
-/* --- Toolbar --- */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* --- Metadata Card --- */
+.metadata-card {
   margin-bottom: var(--space-lg);
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+  border-left: 4px solid var(--ku-red);
 }
 
-.toolbar__group {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
 }
+
+.metadata-item label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.metadata-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* --- Card & Shadow Refinement --- */
+.card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Header Gradient --- */
+.app-header {
+  background: linear-gradient(135deg, #901A1E 0%, #B01F24 100%);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* --- Responsive fixes --- */
+@media (max-width: 768px) {
+  .metadata-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- Editor Header & Toolbar --- */
+.editor-header {
+  margin-bottom: var(--space-xl);
+}
+
+.editor-header__main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: var(--space-sm);
+}
+
+.editor-header__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.editor-info {
+  background: #f8fafc;
+  border-left: 4px solid var(--ku-red);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 0 8px 8px 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  box-shadow: var(--shadow-sm);
+}
+
+.editor-info strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.editor-info p {
+  margin: 0;
+}
+
+.btn--xs {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+/* Specifik styling til Ryd-knappen i den hvide editor-header */
+.editor-header__main #btn-clear-editor {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+.editor-header__main #btn-clear-editor:hover {
+  background: #f1f5f9;
+  color: var(--ku-red);
+  border-color: var(--ku-red);
+}
+

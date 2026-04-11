@@ -42,6 +42,9 @@ export class Dashboard {
       this._renderThirdCountryWarnings();
     }
 
+    // Metadata oversigt (Ny)
+    this._renderMetadata();
+    
     // Summary grid: profil + tier
     this._renderSummary();
 
@@ -53,6 +56,11 @@ export class Dashboard {
 
     // Krav
     this._renderRequirements();
+
+    // Smart Alert: Arkivering af følsomme data (Funktion 2)
+    if (this.result.overall.tier === 'cold' && this.result.overall.profile >= 2) {
+      this._renderArchiveWarning();
+    }
 
     // Platformanbefalinger
     this._renderPlatforms();
@@ -69,6 +77,37 @@ export class Dashboard {
       </div>
     `;
     this.container.appendChild(empty);
+  }
+
+  _renderMetadata() {
+    const { title, contact, dataset, created, modified } = this.result.dmp || {};
+    const dmpTitle = title || 'Navnløs DMP';
+    const contactName = contact?.name || 'Ikke angivet';
+    const dateStr = created ? new Date(created).toLocaleDateString('da-DK') : 'Ukendt dato';
+    
+    const card = document.createElement('div');
+    card.className = 'card metadata-card';
+    card.innerHTML = `
+      <div class="metadata-grid">
+        <div class="metadata-item">
+          <label>DMP Titel</label>
+          <div class="metadata-value">${this._escapeHtml(dmpTitle)}</div>
+        </div>
+        <div class="metadata-item">
+          <label>Ansvarlig</label>
+          <div class="metadata-value">${this._escapeHtml(contactName)}</div>
+        </div>
+        <div class="metadata-item">
+          <label>Oprettet</label>
+          <div class="metadata-value">${dateStr}</div>
+        </div>
+        <div class="metadata-item">
+          <label>Datasæt</label>
+          <div class="metadata-value">${this.result.datasets.length} stk.</div>
+        </div>
+      </div>
+    `;
+    this.container.appendChild(card);
   }
 
   _renderThirdCountryWarnings() {
@@ -243,13 +282,28 @@ export class Dashboard {
       </div>
     `;
 
-    const list = document.createElement('ul');
-    list.style.cssText = 'list-style: none; display: grid; gap: var(--space-sm);';
+    const list = document.createElement('div');
+    list.className = 'requirements-list';
+
     for (const req of this.result.requirements) {
-      const li = document.createElement('li');
-      li.style.cssText = 'display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm); background: var(--bg-page); border-radius: 6px; font-size: var(--font-size-sm);';
-      li.innerHTML = `<span style="color: var(--ku-red);">▸</span> ${this._escapeHtml(req)}`;
-      list.appendChild(li);
+      // Hent beskrivelsen fra lookup-tabellen, eller brug en fallback
+      const detailText = this.result.requirementDetails[req] || 'Der er ingen yderligere uddybning af dette krav.';
+
+      const detailsElement = document.createElement('details');
+      detailsElement.className = 'requirement-item';
+
+      const summary = document.createElement('summary');
+      summary.className = 'requirement-item__summary';
+      // Pil-ikonet styles via CSS
+      summary.innerHTML = `<span class="requirement-item__icon">▸</span> <strong>${this._escapeHtml(req)}</strong>`;
+
+      const content = document.createElement('div');
+      content.className = 'requirement-item__content';
+      content.textContent = detailText;
+
+      detailsElement.appendChild(summary);
+      detailsElement.appendChild(content);
+      list.appendChild(detailsElement);
     }
 
     card.appendChild(list);
@@ -283,6 +337,20 @@ export class Dashboard {
 
     card.appendChild(grid);
     this.container.appendChild(card);
+  }
+
+  _renderArchiveWarning() {
+    const alert = document.createElement('div');
+    alert.className = 'archive-alert';
+    alert.innerHTML = `
+      <div class="archive-alert__icon">💡</div>
+      <div class="archive-alert__content">
+        <strong>Business Case: Sikker Arkivering (Passiv fase)</strong>
+        <p>Projektet er i "Cold Tier", men indeholder følsomme data. Ved at flytte disse data fra den aktive analyseplatform til et <strong>Sikkert WORM-Arkiv</strong>, kan institutionen opnå betydelige besparelser på storage-overførsler og backup-omkostninger, samtidig med at integritetskravene overholdes 100%.</p>
+        <p style="margin-top: 8px; font-style: italic; font-size: 0.9em;">Anbefaling: Kontakt IT for at anmode om en passiv arkiv-provisionering frem for at lade miljøet køre videre i aktiv tilstand.</p>
+      </div>
+    `;
+    this.container.appendChild(alert);
   }
 
   _profileEmoji(level) {

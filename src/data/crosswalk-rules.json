@@ -110,25 +110,36 @@
   ],
   "platforms": [
     {
-      "id": "sif",
-      "name": "SIF (KU)",
-      "description": "Safe Haven med fuld audit-logning. Til Orange/Rød profil.",
-      "supported_profiles": [2, 3],
-      "url": "https://kunet.ku.dk/work-areas/research/data/sif"
-    },
-    {
-      "id": "ucloud",
-      "name": "UCloud (DeiC)",
-      "description": "ISO 27001-certificeret HPC. Gul/Orange/Rød profil.",
-      "supported_profiles": [1, 2, 3],
-      "url": "https://cloud.sdu.dk"
-    },
-    {
-      "id": "erda",
-      "name": "ERDA (KU)",
-      "description": "Generel videnskabelig data. Grøn/Gul profil.",
+      "id": "standard-active",
+      "name": "Standard Forskningsstorage (Aktiv)",
+      "type": "active",
+      "description": "Til daglig brug i aktive projekter. Velegnet til Grøn/Gul profil.",
       "supported_profiles": [0, 1],
-      "url": "https://erda.ku.dk"
+      "url": "#"
+    },
+    {
+      "id": "secure-active",
+      "name": "Højsikkerheds Analyseplatform (Aktiv)",
+      "type": "active",
+      "description": "Certificeret miljø til behandling af følsomme data (Profil 2-3). Inkluderer audit-logning.",
+      "supported_profiles": [2, 3],
+      "url": "#"
+    },
+    {
+      "id": "standard-archive",
+      "name": "Standard Langtidsarkiv (Passiv)",
+      "type": "archive",
+      "description": "Prisbillig lagring til afsluttede projekter uden følsomme data (Profil 0-1).",
+      "supported_profiles": [0, 1],
+      "url": "#"
+    },
+    {
+      "id": "secure-archive",
+      "name": "Sikkert WORM-Arkiv (Passiv)",
+      "type": "archive",
+      "description": "Specialiseret arkiv til følsomme data (Profil 2-3). Sikrer integritet via Write-Once-Read-Many teknologi.",
+      "supported_profiles": [2, 3],
+      "url": "#"
     }
   ],
   "profileLabels": {
@@ -142,5 +153,27 @@
     "hot": { "name": "Hot", "description": "Active Research — Daglig adgang til aktive filer" },
     "warm": { "name": "Warm", "description": "Collaboration — Hyppig deling, versionsstyring" },
     "cold": { "name": "Cold", "description": "Archive — Langtidsbevaring (5-10 år), WORM" }
+  },
+  "requirementDetails": {
+    "Kryptering af data i hvile og transit": "Data skal krypteres både når det er lagret (f.eks. AES-256) og når det overføres over netværk (f.eks. TLS 1.3), for at forhindre uautoriseret adgang ved databrud.",
+    "Logning af adgang": "Alle forsøg på adgang (både succesfulde og afviste) skal registreres med tidsstempel, bruger-ID og handling for at sikre sporbarhed.",
+    "Dokumenteret behandlingsgrundlag": "Der skal foreligge formel dokumentation for, at behandlingen af personoplysninger har et lovligt grundlag iht. GDPR Art. 6 (f.eks. samtykke eller samfundsudførelse).",
+    "Isolation (Safe Haven)": "Data skal placeres i et lukket, logisk adskilt netværksmiljø uden direkte internetadgang. Data må kun analyseres inde i miljøet og kan ikke downloades lokalt.",
+    "Fuld audit-logning": "Udvidet logning der ikke kun registrerer login, men også præcist hvilke dataudtræk og analyser der er foretaget inde i systemet.",
+    "Adgangskontrol med MFA": "Adgang kræver Multi-Factor Authentication (MFA) — f.eks. en kombination af password og en godkender-app eller SMS-kode.",
+    "Kryptering AES-256": "Krav om brug af Advanced Encryption Standard med 256-bit nøglelængde, som er den nuværende guldstandard for sikring af følsomme data.",
+    "Skærpet adgangskontrol": "Adgang gives udelukkende efter et strengt 'need-to-know' princip og skal ofte godkendes manuelt af den dataansvarlige.",
+    "NDA for alle med adgang": "Alle brugere og analytikere skal have underskrevet en Non-Disclosure Agreement (tavshedserklæring), før de tildeles adgang.",
+    "Skærpet log-monitorering": "Logfiler skal ikke blot gemmes, men aktivt overvåges (f.eks. via et SIEM-system) for at opdage unormale adgangsmønstre i realtid.",
+    "Transfer Impact Assessment (TIA)": "En dokumenteret juridisk vurdering af, om modtagerlandet for tredjelandsoverførslen tilbyder et beskyttelsesniveau, der i det væsentlige svarer til EU's.",
+    "Standardkontraktbestemmelser (SCC)": "Brug af EU-Kommissionens faste standardkontrakter til at binde dataimportøren juridisk til at overholde europæiske databeskyttelsesregler.",
+    "WORM-arkivering": "Write Once, Read Many. Data låses på lagringsmediet, så de kan læses ubegrænset, men teknisk ikke kan ændres eller slettes i bevaringsperioden.",
+    "Integritetstjek (checksums)": "Regelmæssig, automatiseret verifikation af filers hash-værdier (f.eks. SHA-256) for at opdage utilsigtet datakorruption eller uautoriseret manipulation.",
+    "Bevaringsplan dokumenteret": "En formel aftale der beskriver, præcis hvor længe data skal gemmes, og hvem der har ansvaret for at migrere formatet, hvis det bliver forældet.",
+    "Dokumenteret etisk vurdering": "En skriftlig redegørelse for de etiske overvejelser i projektet, herunder hvordan potentielle skadevirkninger for forsøgspersoner minimeres.",
+    "Godkendelse fra etisk komité": "Projektet må ikke påbegynde dataindsamling før der foreligger en formel godkendelse fra en relevant institutionel eller national forskningsetisk komité.",
+    "Always-On VPN (Krav 2)": "Bærbare enheder der tilgår data skal have en tvungen, altid-aktiv VPN-forbindelse til institutionens netværk, som ikke kan slås fra af brugeren.",
+    "Lokal MFA (Krav 11)": "MFA-kravet skal håndhæves lokalt på enheden (f.eks. Windows Hello eller YubiKey), før der overhovedet kan oprettes forbindelse til den lukkede datazone.",
+    "12 måneders log-retention (Krav 22)": "Logfiler over systemadfærd og netværkstrafik skal opbevares sikkert i mindst 12 måneder iht. Statens Tekniske Minimumskrav for at muliggøre efterforskning af avancerede cyberangreb."
   }
 }

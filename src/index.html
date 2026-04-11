@@ -41,13 +41,13 @@
         <option value="ex9-dmp-long.json">ex9 — 3 datasæt (persondata + følsomt)</option>
         <option value="ex10-fairsharing.json">ex10 — FAIRsharing DOIs</option>
       </select>
-      <button class="btn btn--ghost btn--sm" id="btn-import" title="Importér maDMP JSON">
+      <button type="button" class="btn btn--ghost btn--sm" id="btn-import" title="Importér maDMP JSON">
         📂 Importér
       </button>
-      <button class="btn btn--ghost btn--sm" id="btn-export" title="Eksportér maDMP JSON">
+      <button type="button" class="btn btn--ghost btn--sm" id="btn-export" title="Eksportér maDMP JSON">
         💾 Eksportér
       </button>
-      <button class="btn btn--ghost btn--sm" id="btn-report" title="Download compliance-rapport">
+      <button type="button" class="btn btn--ghost btn--sm" id="btn-report" title="Hent rapport til Word/LibreOffice (.doc)">
         📄 Rapport
       </button>
     </div>
@@ -72,6 +72,10 @@
     <p>Crosswalk-logik baseret på GDPR, NIS2, URIS-retningslinjer og Dansk kodeks for integritet i forskning (2026)</p>
     <p style="margin-top: var(--space-sm);">Københavns Universitet · <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener" style="color: var(--ku-red);">Datatilsynet tredjelandsliste</a></p>
   </footer>
+
+  <!-- ═══ Hidden Utilities for Browser Compatibility ═══ -->
+  <input type="file" id="hidden-file-input" accept=".json" style="display: none;">
+  <a id="hidden-download-link" style="display: none;"></a>
 
   <script type="module" src="js/app.js"></script>
 </body>

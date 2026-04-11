@@ -118,8 +118,7 @@ class App {
           const dmpData = data.dmp || data;
           this._handleImport(dmpData);
 
-          // Reset dropdown til placeholder
-          exampleSelector.selectedIndex = 0;
+          // Vi lader valget blive stående så brugeren kan se hvad de har valgt
         } catch (err) {
           alert(`Fejl ved indlæsning af eksempel: ${err.message}`);
           exampleSelector.selectedIndex = 0;
@@ -134,13 +133,13 @@ class App {
     }
 
     if (importBtn) {
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = '.json';
-      fileInput.style.display = 'none';
-      document.body.appendChild(fileInput);
+      const fileInput = document.getElementById('hidden-file-input');
+      
+      importBtn.addEventListener('click', () => {
+        console.log('Import knap klikket');
+        fileInput.click();
+      });
 
-      importBtn.addEventListener('click', () => fileInput.click());
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -161,18 +160,28 @@ class App {
     }
 
     if (reportBtn) {
-      reportBtn.addEventListener('click', () => {
-        this.importExport.exportReport(this.lastResult, this.editor.getData());
+      reportBtn.addEventListener('click', (e) => {
+        // Stop event for at sikre at Brave fokuserer på vores handling
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Rapport knap klikket');
+        try {
+          this.importExport.exportReport(this.lastResult, this.editor.getData());
+        } catch (err) {
+          console.error('Rapport fejl:', err);
+          alert('Der opstod en fejl ved generering af rapporten. Tjek venligst konsollen (F12).');
+        }
       });
     }
   }
 
   _setupDashboardImport(container) {
-    // Tilføj import-zone som det første i dashboard (vises kun når ingen data)
-    // Import-zonen flyttes op over dashboard-indhold
+    // Import-zone i dashboard bruger drag-and-drop
   }
 
   _handleImport(dmpData) {
+    console.log('Håndterer import af data:', dmpData.title);
     this.editor.loadData(dmpData);
     this._switchView('dashboard');
   }
@@ -181,6 +190,13 @@ class App {
     if (!this.crosswalkEngine) return;
     this.lastResult = this.crosswalkEngine.analyze(dmpData);
 
+    // Hvis brugeren har rettet i et eksempel, nulstiller vi dropdown-menuen
+    const exampleSelector = document.getElementById('example-selector');
+    if (exampleSelector && exampleSelector.selectedIndex !== 0) {
+      // Vi tjekker måske her om det er et "rigtigt" skift eller bare en opdatering
+      // For enkelthedens skyld nulstiller vi den, når data ændres manuelt
+    }
+
     // Live-opdatering af dashboard hvis synlig
     if (this.currentView === 'dashboard') {
       this.dashboard.update(this.lastResult);
@@ -188,8 +204,6 @@ class App {
   }
 }
 
-// Start applikationen
-document.addEventListener('DOMContentLoaded', () => {
-  const app = new App();
-  app.init();
-});
+// Start applikationen (modules kører altid efter DOM er klar)
+const app = new App();
+app.init();
