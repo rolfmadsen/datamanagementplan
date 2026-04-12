@@ -156,7 +156,7 @@ export class Editor {
 
     card.appendChild(grid);
 
-    card.appendChild(this._textareaInput('Beskrivelse', this.data.description, v => {
+    card.appendChild(this._richTextInput('Beskrivelse', this.data.description, v => {
       this.data.description = v;
     }, 'Kort beskrivelse af hvad denne DMP dækker — projektet, datasæt og datahåndtering.'));
 
@@ -230,7 +230,7 @@ export class Editor {
       this.data.project[0].title = v;
     }, true, 'text', 'Det fulde navn på forskningsprojektet'));
 
-    card.appendChild(this._textareaInput('Projektbeskrivelse', project.description || '', v => {
+    card.appendChild(this._richTextInput('Projektbeskrivelse', project.description || '', v => {
       this.data.project[0].description = v;
     }, 'Kort abstract der beskriver projektets mål, metode og forventet resultat.'));
 
@@ -268,7 +268,7 @@ export class Editor {
     ));
 
     if (this.data.ethical_issues_exist === 'yes') {
-      card.appendChild(this._textareaInput('Beskrivelse af etiske issues', this.data.ethical_issues_description || '', v => {
+      card.appendChild(this._richTextInput('Beskrivelse af etiske issues', this.data.ethical_issues_description || '', v => {
         this.data.ethical_issues_description = v;
       }));
       card.appendChild(this._textInput('Link til etisk rapport', this.data.ethical_issues_report || '', v => {
@@ -282,6 +282,13 @@ export class Editor {
   // ─── Datasæt ────────────────────────────────────────────
   _renderDatasetSection() {
     const wrapper = document.createElement('div');
+    wrapper.className = 'dataset-tabs-container';
+
+    // Label
+    const label = document.createElement('span');
+    label.className = 'dataset-tabs-label';
+    label.textContent = 'Dine datasæt (vælg eller tilføj):';
+    wrapper.appendChild(label);
 
     // Tabs
     const tabBar = document.createElement('div');
@@ -291,7 +298,7 @@ export class Editor {
     datasets.forEach((ds, i) => {
       const tab = document.createElement('button');
       tab.className = `dataset-tab ${i === this.activeDatasetIndex ? 'dataset-tab--active' : ''}`;
-      tab.textContent = ds.title || `Datasæt ${i + 1}`;
+      tab.innerHTML = `<span>📊</span> ${ds.title || `Datasæt ${i + 1}`}`;
       tab.addEventListener('click', () => {
         this.activeDatasetIndex = i;
         this.render();
@@ -302,8 +309,8 @@ export class Editor {
     // Add-knap
     const addTab = document.createElement('button');
     addTab.className = 'dataset-tab dataset-tab--add';
-    addTab.textContent = '+';
-    addTab.title = 'Tilføj datasæt';
+    addTab.innerHTML = '<span>+</span> Tilføj datasæt';
+    addTab.title = 'Tilføj et nyt datasæt til denne maDMP';
     addTab.addEventListener('click', () => {
       this.data.dataset.push(this._defaultDataset());
       this.activeDatasetIndex = this.data.dataset.length - 1;
@@ -338,7 +345,7 @@ export class Editor {
       false, 'text', 'F.eks. Source code, Images, Survey, raw data'));
     card.appendChild(topGrid);
 
-    card.appendChild(this._textareaInput('Beskrivelse', ds.description || '', v => {
+    card.appendChild(this._richTextInput('Beskrivelse', ds.description || '', v => {
       ds.description = v;
     }));
 
@@ -417,6 +424,9 @@ export class Editor {
       ds.distribution[0].byte_size = parseInt(v) || 0;
     }, '🛡️ Bruges til storage tier estimering'));
     section.appendChild(grid1);
+
+    // Format Selector
+    section.appendChild(this._formatSelector(ds));
 
     const grid2 = document.createElement('div');
     grid2.className = 'form-group--inline';
@@ -599,5 +609,127 @@ export class Editor {
     if (this.onDataChange) {
       this.onDataChange(this.data);
     }
+  }
+
+  // --- Format Mapping ---
+  static FORMAT_MAPPING = {
+    'none': { label: 'Vælg format...', mime: [] },
+    'csv': { label: 'CSV (Tabeller/Ark)', mime: ['text/csv'] },
+    'excel': { label: 'Excel (.xlsx)', mime: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'] },
+    'pdf': { label: 'PDF (Dokument)', mime: ['application/pdf'] },
+    'json': { label: 'JSON (Struktureret data)', mime: ['application/json'] },
+    'xml': { label: 'XML (Struktureret data)', mime: ['application/xml'] },
+    'text': { label: 'Kildekode / Tekst', mime: ['text/plain'] },
+    'image': { label: 'Billeder (JPEG/PNG)', mime: ['image/jpeg', 'image/png'] },
+    'video': { label: 'Video (MP4)', mime: ['video/mp4'] },
+    'audio': { label: 'Lyd (MP3/WAV)', mime: ['audio/mpeg', 'audio/wav'] },
+    'archive': { label: 'Arkiv (ZIP/TAR)', mime: ['application/zip'] },
+    'other': { label: 'Andet (proprietært)', mime: [] }
+  };
+
+  _formatSelector(ds) {
+    if (!ds.distribution) ds.distribution = [{}];
+    const dist = ds.distribution[0];
+
+    const group = document.createElement('div');
+    group.className = 'form-group mt-md format-selector-group';
+
+    // Label med compliance-ikon
+    const label = document.createElement('label');
+    label.className = 'form-label form-label--compliance';
+    label.innerHTML = 'Dataformat (Kvalificeret valg)';
+    group.appendChild(label);
+
+    const help = document.createElement('div');
+    help.className = 'form-help';
+    help.textContent = 'Vælg det primære format. Værktøjet mapper automatisk valget til tekniske IANA MIME-typer (maDMP standard).';
+    group.appendChild(help);
+
+    const selectContainer = document.createElement('div');
+    selectContainer.className = 'format-selector-container';
+
+    const select = document.createElement('select');
+    select.className = 'form-select';
+    select.style.flex = '1';
+    select.style.minWidth = '200px';
+
+    const badge = document.createElement('div');
+    badge.className = 'mime-badge';
+
+    const updateBadge = (val) => {
+      const cfg = Editor.FORMAT_MAPPING[val];
+      if (cfg && cfg.mime.length > 0) {
+        badge.innerHTML = `<span class="mime-badge__label">Standard:</span> <code>${cfg.mime[0]}</code>`;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    };
+
+    // Find nuværende valg baseret på MIME
+    let currentValue = 'none';
+    const currentMime = dist.format?.[0] || '';
+    for (const [key, cfg] of Object.entries(Editor.FORMAT_MAPPING)) {
+      if (cfg.mime.includes(currentMime)) {
+        currentValue = key;
+        break;
+      }
+    }
+
+    Object.entries(Editor.FORMAT_MAPPING).forEach(([key, cfg]) => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = cfg.label;
+      if (key === currentValue) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    updateBadge(currentValue);
+
+    select.addEventListener('change', () => {
+      const cfg = Editor.FORMAT_MAPPING[select.value];
+      dist.format = cfg.mime;
+      updateBadge(select.value);
+      this._notifyChange();
+    });
+
+    selectContainer.appendChild(select);
+    selectContainer.appendChild(badge);
+    group.appendChild(selectContainer);
+    return group;
+  }
+
+  _richTextInput(labelStr, value, onChange, placeholder = '') {
+    const group = document.createElement('div');
+    group.className = 'form-group';
+
+    const label = document.createElement('label');
+    label.className = 'form-label';
+    label.textContent = labelStr;
+    group.appendChild(label);
+
+    // Unikt ID til Trix' interne mapping
+    const inputId = `trix-${Math.random().toString(36).substr(2, 9)}`;
+
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.id = inputId;
+    hiddenInput.value = value || '';
+    group.appendChild(hiddenInput);
+
+    const trixEditor = document.createElement('trix-editor');
+    trixEditor.setAttribute('input', inputId);
+    if (placeholder) {
+      trixEditor.setAttribute('placeholder', placeholder);
+    }
+    trixEditor.className = 'trix-content';
+
+    // Trix opdaterer hiddenInput automatisk, vi lytter blot på ændringen
+    trixEditor.addEventListener('trix-change', () => {
+      onChange(hiddenInput.value);
+    });
+
+    group.appendChild(trixEditor);
+    return group;
   }
 }

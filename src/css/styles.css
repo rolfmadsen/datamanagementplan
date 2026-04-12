@@ -123,20 +123,50 @@ body {
 .app-header__brand {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-lg);
+}
+
+.app-header__logo-container {
+  width: 56px;
+  height: 56px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--space-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  border: 1px solid #fff;
+  /* Tyndere hvid kant */
+  padding: 1px;
+  flex-shrink: 0;
+}
+
+.app-header__logo-img {
+  height: 54px;
+  /* Lidt større for at fylde den tyndere ring ud */
+  width: auto;
+}
+
+.app-header__title-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .app-header__logo {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   letter-spacing: -0.5px;
+  line-height: 1.1;
 }
 
 .app-header__subtitle {
-  font-size: var(--font-size-sm);
-  opacity: 0.85;
-  font-weight: 300;
+  font-size: var(--font-size-xs);
+  opacity: 0.9;
+  font-weight: 400;
+  margin-top: 2px;
 }
+
 
 .app-header__actions {
   display: flex;
@@ -200,6 +230,7 @@ body {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -479,6 +510,7 @@ body {
   border: 2px solid var(--profile-green-border);
   color: var(--profile-green);
 }
+
 .profile-badge--green::before {
   box-shadow: inset 0 0 40px rgba(46, 125, 50, 0.08);
 }
@@ -488,6 +520,7 @@ body {
   border: 2px solid var(--profile-yellow-border);
   color: var(--profile-yellow);
 }
+
 .profile-badge--yellow::before {
   box-shadow: inset 0 0 40px rgba(249, 168, 37, 0.08);
 }
@@ -497,6 +530,7 @@ body {
   border: 2px solid var(--profile-orange-border);
   color: var(--profile-orange);
 }
+
 .profile-badge--orange::before {
   box-shadow: inset 0 0 40px rgba(239, 108, 0, 0.08);
 }
@@ -506,6 +540,7 @@ body {
   border: 2px solid var(--profile-red-border);
   color: var(--profile-red);
 }
+
 .profile-badge--red::before {
   box-shadow: inset 0 0 40px rgba(198, 40, 40, 0.08);
 }
@@ -557,10 +592,21 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-.tier-indicator__segment--critical { background: var(--tier-critical); }
-.tier-indicator__segment--hot { background: var(--tier-hot); }
-.tier-indicator__segment--warm { background: var(--tier-warm); }
-.tier-indicator__segment--cold { background: var(--tier-cold); }
+.tier-indicator__segment--critical {
+  background: var(--tier-critical);
+}
+
+.tier-indicator__segment--hot {
+  background: var(--tier-hot);
+}
+
+.tier-indicator__segment--warm {
+  background: var(--tier-warm);
+}
+
+.tier-indicator__segment--cold {
+  background: var(--tier-cold);
+}
 
 /* --- Dashboard: Rules Table --- */
 .rules-table {
@@ -693,41 +739,68 @@ body {
 }
 
 /* --- Dataset Tabs (Editor) --- */
+/* --- Dataset Tabs (Editor) --- */
+.dataset-tabs-container {
+  margin-bottom: var(--space-lg);
+}
+
+.dataset-tabs-label {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  display: block;
+}
+
 .dataset-tabs {
   display: flex;
-  gap: 2px;
-  border-bottom: 2px solid var(--border-color);
-  margin-bottom: var(--space-lg);
+  gap: 6px;
   overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .dataset-tab {
-  padding: var(--space-sm) var(--space-lg);
-  border: none;
-  background: transparent;
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-light);
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  color: var(--text-muted);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
+  color: var(--text-secondary);
+  border-radius: var(--border-radius);
   transition: all var(--transition-fast);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .dataset-tab:hover {
-  color: var(--text-primary);
+  background: #fff;
+  border-color: var(--ku-red-light);
+  color: var(--ku-red);
 }
 
 .dataset-tab--active {
+  background: #fff;
   color: var(--ku-red);
-  border-bottom-color: var(--ku-red);
+  border-color: var(--ku-red);
+  box-shadow: var(--shadow-sm);
 }
 
 .dataset-tab--add {
-  color: var(--ku-grey-light);
-  font-size: var(--font-size-lg);
+  background: rgba(144, 26, 30, 0.05);
+  color: var(--ku-red);
+  border: 1px dashed var(--ku-red);
+}
+
+.dataset-tab--add:hover {
+  background: var(--ku-red);
+  color: #fff;
+  border-style: solid;
 }
 
 /* --- Summary Grid (Dashboard) --- */
@@ -844,14 +917,15 @@ body {
   padding: 12px 16px;
   cursor: pointer;
   font-size: var(--font-size-sm);
-  list-style: none; /* Skjuler browserens standardpil */
+  list-style: none;
+  /* Skjuler browserens standardpil */
   user-select: none;
   transition: background var(--transition-fast);
 }
 
 /* Safari specifik løsning til at skjule standardpil */
 .requirement-item__summary::-webkit-details-marker {
-  display: none; 
+  display: none;
 }
 
 .requirement-item__summary:hover {
@@ -893,7 +967,7 @@ details[open] .requirement-item__icon {
   font-size: 1.5rem;
 }
 
-.archive-alert__content > strong {
+.archive-alert__content>strong {
   display: block;
   margin-bottom: 4px;
   color: #856404;
@@ -907,8 +981,15 @@ details[open] .requirement-item__icon {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .empty-state__icon {
@@ -936,14 +1017,37 @@ details[open] .requirement-item__icon {
   border: 0;
 }
 
-.text-green { color: var(--profile-green); }
-.text-yellow { color: var(--profile-yellow); }
-.text-orange { color: var(--profile-orange); }
-.text-red { color: var(--profile-red); }
-.bg-green { background: var(--profile-green-bg); }
-.bg-yellow { background: var(--profile-yellow-bg); }
-.bg-orange { background: var(--profile-orange-bg); }
-.bg-red { background: var(--profile-red-bg); }
+.text-green {
+  color: var(--profile-green);
+}
+
+.text-yellow {
+  color: var(--profile-yellow);
+}
+
+.text-orange {
+  color: var(--profile-orange);
+}
+
+.text-red {
+  color: var(--profile-red);
+}
+
+.bg-green {
+  background: var(--profile-green-bg);
+}
+
+.bg-yellow {
+  background: var(--profile-yellow-bg);
+}
+
+.bg-orange {
+  background: var(--profile-orange-bg);
+}
+
+.bg-red {
+  background: var(--profile-red-bg);
+}
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
@@ -1014,7 +1118,7 @@ details[open] .requirement-item__icon {
 /* --- Header Gradient --- */
 .app-header {
   background: linear-gradient(135deg, #901A1E 0%, #B01F24 100%);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* --- Responsive fixes --- */
@@ -1056,10 +1160,62 @@ details[open] .requirement-item__icon {
   box-shadow: var(--shadow-sm);
 }
 
+/* --- Trix Editor (WYSIWYG) Overrides --- */
+trix-toolbar {
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  padding: 4px;
+}
+
+trix-toolbar .trix-button-group {
+  border-color: var(--border-color) !important;
+  margin-bottom: 0 !important;
+}
+
+trix-toolbar .trix-button {
+  border-bottom: none !important;
+}
+
+trix-toolbar .trix-button--active {
+  background: rgba(144, 26, 30, 0.1) !important;
+  color: var(--ku-red) !important;
+}
+
+trix-editor {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0 0 var(--border-radius) var(--border-radius) !important;
+  min-height: 150px;
+  background: #fff;
+  padding: var(--space-md) !important;
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.6 !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+trix-editor:focus {
+  border-color: var(--ku-red) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(144, 26, 30, 0.1) !important;
+}
+
+/* Skjul utjekkede Trix-features vi ikke vil have (f.eks. vedhæftede filer) for at holde det simpelt */
+trix-toolbar .trix-button-group--file-tools {
+  display: none !important;
+}
+
+/* --- Utilities --- */
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+
 .editor-info strong {
   color: var(--text-primary);
-  display: block;
-  margin-bottom: 4px;
+  /* Fjernet display: block for at undgå uønskede linjeskift i brødtekst */
 }
 
 .editor-info p {
@@ -1069,6 +1225,67 @@ details[open] .requirement-item__icon {
 .btn--xs {
   padding: 4px 8px;
   font-size: 11px;
+}
+
+/* --- Format Selector & MIME Badge --- */
+.format-selector-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: stretch;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .format-selector-container {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
+  }
+}
+
+.mime-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  animation: fadeIn var(--transition-fast);
+}
+
+.mime-badge__label {
+  font-weight: 600;
+  margin-right: 6px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mime-badge code {
+  color: var(--ku-red);
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.form-label--compliance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ku-red);
+  font-weight: 600;
+}
+
+.form-label--compliance::before {
+  content: '🛡️';
+  font-size: 1.1em;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Specifik styling til Ryd-knappen i den hvide editor-header */
@@ -1082,4 +1299,3 @@ details[open] .requirement-item__icon {
   color: var(--ku-red);
   border-color: var(--ku-red);
 }
-

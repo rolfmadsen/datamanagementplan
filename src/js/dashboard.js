@@ -80,7 +80,7 @@ export class Dashboard {
   }
 
   _renderMetadata() {
-    const { title, contact, dataset, created, modified } = this.result.dmp || {};
+    const { title, contact, dataset, created, modified, description } = this.result.dmp || {};
     const dmpTitle = title || 'Navnløs DMP';
     const contactName = contact?.name || 'Ikke angivet';
     const dateStr = created ? new Date(created).toLocaleDateString('da-DK') : 'Ukendt dato';
@@ -106,6 +106,11 @@ export class Dashboard {
           <div class="metadata-value">${this.result.datasets.length} stk.</div>
         </div>
       </div>
+      ${description ? `
+      <div class="metadata-description mt-lg">
+        <label class="form-label">DMP Beskrivelse</label>
+        <div class="metadata-value">${this._safeHtml(description)}</div>
+      </div>` : ''}
     `;
     this.container.appendChild(card);
   }
@@ -198,6 +203,10 @@ export class Dashboard {
         <div>
           <div class="dataset-result__title">${this._escapeHtml(ds.title)}</div>
           <div class="dataset-result__type">${this._escapeHtml(ds.type)} · Persondata: ${ds.personalData} · Følsomme: ${ds.sensitiveData}</div>
+          ${ds.description ? `<div class="dataset-result__description mt-sm">${this._safeHtml(ds.description)}</div>` : ''}
+          <div class="dataset-result__format mt-sm">
+            <span class="badge badge--sm">${(ds.format && ds.format.length > 0) ? ds.format.join(', ') : 'Format ikke angivet'}</span>
+          </div>
         </div>
         <span class="dataset-result__profile bg-${profileColor} text-${profileColor}">
           ${this._profileEmoji(ds.profile)} ${ds.profileLabel.name}
@@ -362,5 +371,58 @@ export class Dashboard {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  /**
+   * Sikker rendering af begrænset HTML (Sanitizer)
+   */
+  _safeHtml(html) {
+    if (!html) return '';
+    
+    // Brug browserens indbyggede DOMParser til sikker parsing
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Liste over tilladte tags
+    const allowedTags = ['P', 'BR', 'B', 'I', 'STRONG', 'EM', 'UL', 'OL', 'LI', 'A'];
+    
+    const sanitize = (node) => {
+      for (let i = node.childNodes.length - 1; i >= 0; i--) {
+        const child = node.childNodes[i];
+        
+        if (child.nodeType === 1) { // Element node
+          if (!allowedTags.includes(child.tagName)) {
+            // Hvis tagget ikke er tilladt, behold teksten men fjern tagget
+            const text = document.createTextNode(child.textContent);
+            node.replaceChild(text, child);
+          } else {
+            // Hvis det er et link, rens attributterne
+            if (child.tagName === 'A') {
+              const href = child.getAttribute('href');
+              // Tillad kun http/https links
+              if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+                child.setAttribute('target', '_blank');
+                child.setAttribute('rel', 'noopener noreferrer');
+              } else {
+                child.removeAttribute('href');
+              }
+            }
+            // Rens alle andre attributter
+            const attrs = child.attributes;
+            for (let j = attrs.length - 1; j >= 0; j--) {
+              const attrName = attrs[j].name;
+              if (child.tagName === 'A' && (attrName === 'href' || attrName === 'target' || attrName === 'rel')) continue;
+              child.removeAttribute(attrName);
+            }
+            sanitize(child);
+          }
+        } else if (child.nodeType !== 3) { // Ikke tekst node
+          node.removeChild(child);
+        }
+      }
+    };
+    
+    sanitize(doc.body);
+    return doc.body.innerHTML;
   }
 }

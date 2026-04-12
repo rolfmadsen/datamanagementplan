@@ -1,4 +1,4 @@
-# maDMP Compliance & Storage Tier Tool
+# DMP Storage Guide
 
 **Automatiseret mapping af forskningsdata til sikkerhedsprofiler og storage tiers.**
 

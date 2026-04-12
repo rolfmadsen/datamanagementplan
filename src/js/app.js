@@ -55,7 +55,7 @@ class App {
       // Initial analyse
       this._onDataChange(this.editor.getData());
 
-      console.log('maDMP Compliance Tool initialiseret.');
+      console.log('DMP Storage Guide initialiseret.');
     } catch (error) {
       console.error('Initialiseringsfejl:', error);
       document.getElementById('view-editor').innerHTML = `
@@ -134,7 +134,7 @@ class App {
 
     if (importBtn) {
       const fileInput = document.getElementById('hidden-file-input');
-      
+
       importBtn.addEventListener('click', () => {
         console.log('Import knap klikket');
         fileInput.click();
@@ -164,7 +164,7 @@ class App {
         // Stop event for at sikre at Brave fokuserer på vores handling
         e.preventDefault();
         e.stopPropagation();
-        
+
         console.log('Rapport knap klikket');
         try {
           this.importExport.exportReport(this.lastResult, this.editor.getData());

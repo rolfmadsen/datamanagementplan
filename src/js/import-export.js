@@ -125,7 +125,7 @@ export class ImportExport {
     const title = dmpData.title ? dmpData.title.replace(/[^a-zA-Z0-9æøåÆØÅ]/g, '_').toLowerCase() : 'madmp';
     a.download = `${title}_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    
+
     // Øget timeout for Linux/Brave stabilitet
     setTimeout(() => {
       URL.revokeObjectURL(url);
@@ -287,7 +287,7 @@ export class ImportExport {
 
     html += `
         <div class="footer">
-          <p>Dette dokument er genereret automatisk af maDMP Compliance Tool — Københavns Universitet.</p>
+          <p>Dette dokument er genereret automatisk af DMP Storage Guide — Københavns Universitet.</p>
           <p>Værktøjet benytter Crosswalk-logik baseret på GDPR, NIS2, URIS-retningslinjer og Dansk kodeks for integritet i forskning.</p>
         </div>
       </body>
@@ -297,13 +297,13 @@ export class ImportExport {
     // Download som .doc (via Data URI for at omgå Brave/HTTP blokering)
     const base64Html = btoa(unescape(encodeURIComponent('\ufeff' + html)));
     const dataUri = 'data:application/msword;base64,' + base64Html;
-    
+
     const a = document.getElementById('hidden-download-link');
     a.href = dataUri;
     const fileNameTitle = dmpData.title ? dmpData.title.replace(/[^a-zA-Z0-9æøåÆØÅ]/g, '_').toLowerCase() : 'madmp';
     a.download = `compliance_rapport_${fileNameTitle}_${new Date().toISOString().slice(0, 10)}.doc`;
     a.click();
-    
+
     // Ryd op efter download
     setTimeout(() => {
       a.href = '';
