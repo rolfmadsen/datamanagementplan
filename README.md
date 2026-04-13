@@ -82,13 +82,13 @@ Valget af Storage Tier afhænger af projektets fase, typen af hardware og behove
 
 ```mermaid
 flowchart TD
-    Start([Start]) --> Dates{Er alle slutdatoer\npasseret?}
-    Dates -- Ja --> Cold[<b>COLD (Arkiv)</b>\nGDPR Art. 17 / WORM krav]
-    Dates -- Nej --> HPC{Er der behov for\nHPC/GPU-ressourcer?}
-    HPC -- Ja --> Critical[<b>CRITICAL</b>\nHigh Performance Computing]
-    HPC -- Nej --> Version{Understøtter host\nversionsstyring?}
-    Version -- Ja --> Warm[<b>WARM</b>\nCollaboration / Deling]
-    Version -- Nej --> Hot[<b>HOT</b>\nStandard Active Research]
+    Start([Start]) --> Dates{"Er alle slutdatoer\npasseret?"}
+    Dates -- Ja --> Cold["<b>COLD Arkiv</b>\nGDPR Art. 17 / WORM krav"]
+    Dates -- Nej --> HPC{"Er der behov for\nHPC/GPU-ressourcer?"}
+    HPC -- Ja --> Critical["<b>CRITICAL</b>\nHigh Performance Computing"]
+    HPC -- Nej --> Version{"Understøtter host\nversionsstyring?"}
+    Version -- Ja --> Warm["<b>WARM</b>\nCollaboration / Deling"]
+    Version -- Nej --> Hot["<b>HOT</b>\nStandard Active Research"]
 ```
 
 ### 4. Tredjelandsoverførsler (URIS / GDPR Kap. V)
