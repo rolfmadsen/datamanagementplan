@@ -1,0 +1,195 @@
+﻿
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Compliance Rapport</title>
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.5; color: #333; }
+          .header { background-color: #901A1E; color: white; padding: 20px; margin-bottom: 30px; }
+          .header h1 { margin: 0; font-size: 24pt; }
+          .header p { margin: 5px 0 0 0; opacity: 0.8; }
+          
+          h2 { color: #901A1E; border-bottom: 2px solid #E0E0E0; padding-bottom: 5px; margin-top: 30px; }
+          h3 { color: #666; margin-top: 20px; }
+          
+          .summary-box { background: #F5F5F5; border-left: 5px solid #901A1E; padding: 15px; margin: 20px 0; }
+          .summary-item { margin-bottom: 10px; }
+          .label { font-weight: bold; color: #555; width: 150px; display: inline-block; }
+          
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th { background: #EEEEEE; text-align: left; padding: 10px; border: 1px solid #DDD; }
+          td { padding: 10px; border: 1px solid #DDD; vertical-align: top; }
+          
+          .badge { padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 9pt; }
+          .badge-green { background: #E8F5E9; color: #2E7D32; }
+          .badge-yellow { background: #FFFDE7; color: #F9A825; }
+          .badge-orange { background: #FFF3E0; color: #EF6C00; }
+          .badge-red { background: #FFEBEE; color: #C62828; }
+          
+          .requirement { margin-bottom: 15px; border: 1px solid #E0E0E0; border-radius: 5px; }
+          .req-title { background: #F9FAFB; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #E0E0E0; }
+          .req-body { padding: 10px 12px; font-size: 10pt; color: #555; }
+          
+          .footer { margin-top: 50px; font-size: 9pt; color: #888; text-align: center; border-top: 1px solid #EEE; padding-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Compliance Rapport</h1>
+          <p>maDMP Crosswalk Analyse · Genereret 12.4.2026, 11.03.05</p>
+        </div>
+
+        <div class="summary-box">
+          <div class="summary-item"><span class="label">DMP Titel:</span> DMP for our new project</div>
+          <div class="summary-item"><span class="label">DMP ID:</span> 10.0000/00.0.1234</div>
+          <div class="summary-item"><span class="label">Sikkerhedsprofil:</span> <strong>Rød (Niveau 3)</strong></div>
+          <div class="summary-item"><span class="label">Storage Tier:</span> <strong>Cold</strong></div>
+        </div>
+
+        <h2>📊 Datasæt Oversigt</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Datasæt</th>
+              <th>Type</th>
+              <th>Persondata / Følsomme</th>
+              <th>Sikkerhedsprofil</th>
+              <th>Storage Tier</th>
+            </tr>
+          </thead>
+          <tbody>
+    
+        <tr>
+          <td><strong>Client application</strong></td>
+          <td>Source code</td>
+          <td>no / no</td>
+          <td><span class="badge badge-green">Grøn</span></td>
+          <td>Cold</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Image collection</strong></td>
+          <td>Images</td>
+          <td>no / yes</td>
+          <td><span class="badge badge-red">Rød</span></td>
+          <td>Cold</td>
+        </tr>
+      
+        <tr>
+          <td><strong>Interviews</strong></td>
+          <td>other</td>
+          <td>yes / no</td>
+          <td><span class="badge badge-yellow">Gul</span></td>
+          <td>Cold</td>
+        </tr>
+      
+          </tbody>
+        </table>
+
+        <h2>📜 Regulatorisk Mapping</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Regel / Hjemmel</th>
+              <th>Beskrivelse</th>
+              <th>Datasæt</th>
+            </tr>
+          </thead>
+          <tbody>
+    
+          <tr>
+            <td><strong>GDPR Artikel 9 — Følsomme personoplysninger</strong><br><small>GDPR Artikel 9 / Databeskyttelsesloven § 10</small></td>
+            <td>Datasættet indeholder følsomme data (helbredsoplysninger, biometri, DNA osv.). Kræver isolation og højeste sikkerhedsniveau.</td>
+            <td>Image collection</td>
+          </tr>
+        
+          <tr>
+            <td><strong>NIS2 — Lukket adgang til følsomt data</strong><br><small>NIS2-loven § 6 / Statens Tekniske Minimumskrav</small></td>
+            <td>Datasæt med persondata eller følsom data der har lukket adgang kræver skærpet NIS2-overholdelse.</td>
+            <td>Image collection</td>
+          </tr>
+        
+          <tr>
+            <td><strong>GDPR Artikel 6 — Personoplysninger</strong><br><small>GDPR Artikel 6</small></td>
+            <td>Datasættet indeholder personoplysninger. Kræver lovligt behandlingsgrundlag.</td>
+            <td>Interviews</td>
+          </tr>
+        
+          <tr>
+            <td><strong>Etiske problemstillinger</strong><br><small>Dansk kodeks for integritet i forskning (2026)</small></td>
+            <td>DMP'en angiver eksisterende etiske problemstillinger. Kræver dokumentation og minimum Gul profil.</td>
+            <td>DMP-niveau</td>
+          </tr>
+        
+          </tbody>
+        </table>
+
+        <h2>✅ Påkrævede foranstaltninger</h2>
+    
+          <div class="requirement">
+            <div class="req-title">▸ Isolation (Safe Haven)</div>
+            <div class="req-body">Data skal placeres i et lukket, logisk adskilt netværksmiljø uden direkte internetadgang. Data må kun analyseres inde i miljøet og kan ikke downloades lokalt.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Fuld audit-logning</div>
+            <div class="req-body">Udvidet logning der ikke kun registrerer login, men også præcist hvilke dataudtræk og analyser der er foretaget inde i systemet.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Adgangskontrol med MFA</div>
+            <div class="req-body">Adgang kræver Multi-Factor Authentication (MFA) — f.eks. en kombination af password og en godkender-app eller SMS-kode.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Kryptering AES-256</div>
+            <div class="req-body">Krav om brug af Advanced Encryption Standard med 256-bit nøglelængde, som er den nuværende guldstandard for sikring af følsomme data.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Always-On VPN (Krav 2)</div>
+            <div class="req-body">Bærbare enheder der tilgår data skal have en tvungen, altid-aktiv VPN-forbindelse til institutionens netværk, som ikke kan slås fra af brugeren.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Lokal MFA (Krav 11)</div>
+            <div class="req-body">MFA-kravet skal håndhæves lokalt på enheden (f.eks. Windows Hello eller YubiKey), før der overhovedet kan oprettes forbindelse til den lukkede datazone.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ 12 måneders log-retention (Krav 22)</div>
+            <div class="req-body">Logfiler over systemadfærd og netværkstrafik skal opbevares sikkert i mindst 12 måneder iht. Statens Tekniske Minimumskrav for at muliggøre efterforskning af avancerede cyberangreb.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Kryptering af data i hvile og transit</div>
+            <div class="req-body">Data skal krypteres både når det er lagret (f.eks. AES-256) og når det overføres over netværk (f.eks. TLS 1.3), for at forhindre uautoriseret adgang ved databrud.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Logning af adgang</div>
+            <div class="req-body">Alle forsøg på adgang (både succesfulde og afviste) skal registreres med tidsstempel, bruger-ID og handling for at sikre sporbarhed.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Dokumenteret behandlingsgrundlag</div>
+            <div class="req-body">Der skal foreligge formel dokumentation for, at behandlingen af personoplysninger har et lovligt grundlag iht. GDPR Art. 6 (f.eks. samtykke eller samfundsudførelse).</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Dokumenteret etisk vurdering</div>
+            <div class="req-body">En skriftlig redegørelse for de etiske overvejelser i projektet, herunder hvordan potentielle skadevirkninger for forsøgspersoner minimeres.</div>
+          </div>
+        
+          <div class="requirement">
+            <div class="req-title">▸ Godkendelse fra etisk komité</div>
+            <div class="req-body">Projektet må ikke påbegynde dataindsamling før der foreligger en formel godkendelse fra en relevant institutionel eller national forskningsetisk komité.</div>
+          </div>
+        
+        <div class="footer">
+          <p>Dette dokument er genereret automatisk af DMP Storage Guide — Københavns Universitet.</p>
+          <p>Værktøjet benytter Crosswalk-logik baseret på GDPR, NIS2, URIS-retningslinjer og Dansk kodeks for integritet i forskning.</p>
+        </div>
+      </body>
+      </html>
+    
